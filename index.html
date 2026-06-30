@@ -649,24 +649,124 @@ Mas parece que meu corpo tem vontade própria.</div>
 <p>Cada lado do quadrado é um comando. Você respira seguindo as quatro retas, uma de cada vez.</p>
 <p class="frase-destaque-terracota-grande">Cada reta tem 4 tempos. Respire pelo nariz.</p>
 <p class="resp-instrucao-texto"><strong>INSPIRA 4 → SEGURA 4 → EXPIRA 4 → SEGURA 4.</strong></p>
-<div class="resp-quadrada-diagrama">
-  <div class="rq-topo">
-    <div class="rq-label-topo"><strong class="rq-cmd">INSPIRA</strong><br><span>conte até 4</span></div>
-  </div>
-  <div class="rq-meio">
-    <div class="rq-lado-esq"><strong class="rq-cmd">SEGURA</strong><br><span>conte até 4</span></div>
-    <div class="rq-quadrado">
-      <p>Repita esse ciclo</p>
-      <p class="rq-vezes">4 vezes seguidas.</p>
-      <p>Sinta o corpo desacelerando a cada volta.</p>
+<div class="rqa-painel">
+  <div class="rqa-quadrado-area">
+    <div class="rqa-quadrado-borda"></div>
+    <svg class="rqa-orbit-svg" viewBox="0 0 220 220">
+      <circle class="rqa-orbit-dot" cx="0" cy="0" r="10" fill="#C4785A" stroke="#fff" stroke-width="1.5"/>
+    </svg>
+    <div class="rqa-circulo-central-wrap">
+      <svg viewBox="0 0 140 140" width="140" height="140">
+        <circle cx="70" cy="70" r="46" fill="#C4785A" opacity="0.22"/>
+        <circle cx="70" cy="70" r="36" fill="#C4785A"/>
+        <text class="rqa-center-label" x="70" y="75" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">Pronta?</text>
+      </svg>
     </div>
-    <div class="rq-lado-dir"><strong class="rq-cmd">SEGURA</strong><br><span>conte até 4</span></div>
   </div>
-  <div class="rq-base">
-    <div class="rq-label-base"><span>conte até 4</span><br><strong class="rq-cmd-exp">EXPIRA</strong></div>
+
+  <div class="rqa-cards">
+    <div class="rqa-phase-card" data-phase="0"><div class="rqa-phase-title">INSPIRE</div><div class="rqa-phase-sub">4 seg · pelo nariz</div></div>
+    <div class="rqa-phase-card" data-phase="1"><div class="rqa-phase-title">SEGURE</div><div class="rqa-phase-sub">4 seg · suavem.</div></div>
+    <div class="rqa-phase-card" data-phase="2"><div class="rqa-phase-title">EXPIRE</div><div class="rqa-phase-sub">4 seg · pela boca</div></div>
+    <div class="rqa-phase-card" data-phase="3"><div class="rqa-phase-title">SEGURE</div><div class="rqa-phase-sub">4 seg · suavem.</div></div>
   </div>
-  <p class="rq-rodape">Repita 4 vezes. Respire pelo nariz. Solte pela boca.</p>
+
+  <div class="rqa-bignum"></div>
+  <div class="rqa-affirmation">Inspire tranquilidade... expire tensão...</div>
+
+  <div class="rqa-btn-wrap">
+    <button class="rqa-toggle-btn">▶ Iniciar</button>
+    <div class="rqa-cycle-row" style="visibility:hidden"><span class="rqa-cycle-count">0</span> ciclos completos ✓</div>
+  </div>
 </div>
+
+<style>
+.rqa-painel{width:100%;max-width:420px;background:#2b2b2b;border-radius:16px;padding:24px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:20px;font-family:Arial,sans-serif;margin:20px auto}
+.rqa-quadrado-area{position:relative;width:220px;height:220px;flex-shrink:0;max-width:100%}
+.rqa-quadrado-borda{position:absolute;inset:0;border:2px solid rgba(196,120,90,0.6);border-radius:6px;pointer-events:none}
+.rqa-orbit-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;z-index:10;pointer-events:none}
+.rqa-circulo-central-wrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.rqa-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;width:100%}
+.rqa-phase-card{border-radius:8px;padding:8px 4px;text-align:center;background:#3a3a39;transition:background .3s}
+.rqa-phase-title{color:#9a9a96;font-size:11px;font-weight:700}
+.rqa-phase-sub{color:#7f7f7c;font-size:10px;margin-top:2px}
+.rqa-bignum{font-size:34px;font-weight:700;color:#e9d9cf;line-height:1;text-align:center;min-height:42px}
+.rqa-affirmation{color:#cfcfc9;font-size:13px;font-style:italic;text-align:center;padding:0 12px}
+.rqa-btn-wrap{display:flex;flex-direction:column;align-items:center;gap:8px}
+.rqa-toggle-btn{background:#C4785A;color:#fff;border:none;border-radius:24px;padding:10px 26px;font-size:13px;font-weight:600;cursor:pointer;font-family:Arial,sans-serif}
+.rqa-cycle-row{color:#8a8a86;font-size:12px}
+</style>
+
+<script>
+(function(){
+  document.querySelectorAll('.rqa-painel').forEach(function(painel){
+    var orbitDot=painel.querySelector('.rqa-orbit-dot');
+    var centerLabel=painel.querySelector('.rqa-center-label');
+    var bigNumber=painel.querySelector('.rqa-bignum');
+    var affirmation=painel.querySelector('.rqa-affirmation');
+    var toggleBtn=painel.querySelector('.rqa-toggle-btn');
+    var cycleCountEl=painel.querySelector('.rqa-cycle-count');
+    var cycleRow=painel.querySelector('.rqa-cycle-row');
+    var cards=painel.querySelectorAll('.rqa-phase-card');
+
+    var DUR=4000;
+    var x0=0,y0=0,x1=220,y1=220;
+    var phases=[
+      {title:'INSPIRE',color:'#C4785A',from:[x0,y0],to:[x1,y0],affirmation:'"Inspiro tranquilidade..."'},
+      {title:'SEGURE', color:'#9a9a96',from:[x1,y0],to:[x1,y1],affirmation:'"Eu sustento esse momento..."'},
+      {title:'EXPIRE', color:'#7A9B76',from:[x1,y1],to:[x0,y1],affirmation:'"Solto o que não preciso carregar..."'},
+      {title:'SEGURE', color:'#9a9a96',from:[x0,y1],to:[x0,y0],affirmation:'"Eu descanso aqui..."'}
+    ];
+    var running=false,rafId=null,phaseIdx=0,phaseStart=0,cycleCount=0;
+
+    function lerp(a,b,t){return a+(b-a)*t;}
+    function setActiveCard(idx){
+      cards.forEach(function(c){
+        var active=parseInt(c.getAttribute('data-phase'))===idx;
+        c.style.background=active?'#C4785A':'#3a3a39';
+        c.querySelector('.rqa-phase-title').style.color=active?'#fff':'#9a9a96';
+        c.querySelector('.rqa-phase-sub').style.color=active?'rgba(255,255,255,0.85)':'#7f7f7c';
+      });
+    }
+    function step(ts){
+      if(!running)return;
+      if(!phaseStart)phaseStart=ts;
+      var elapsed=ts-phaseStart;
+      var t=Math.min(elapsed/DUR,1);
+      var p=phases[phaseIdx];
+      var x=lerp(p.from[0],p.to[0],t);
+      var y=lerp(p.from[1],p.to[1],t);
+      orbitDot.setAttribute('cx',x.toFixed(1));
+      orbitDot.setAttribute('cy',y.toFixed(1));
+      orbitDot.setAttribute('fill',p.color);
+      centerLabel.textContent=p.title;
+      var rem=Math.min(Math.max(Math.ceil((DUR-elapsed)/1000),1),4);
+      bigNumber.textContent=rem;
+      affirmation.textContent=p.affirmation;
+      setActiveCard(phaseIdx);
+      if(t>=1){
+        var next=(phaseIdx+1)%phases.length;
+        if(next===0){cycleCount++;cycleCountEl.textContent=cycleCount;cycleRow.style.visibility='visible';}
+        phaseIdx=next;phaseStart=ts;
+      }
+      rafId=requestAnimationFrame(step);
+    }
+    function start(){
+      if(running)return;
+      running=true;phaseStart=0;cycleCount=0;
+      cycleCountEl.textContent=0;cycleRow.style.visibility='hidden';
+      toggleBtn.textContent='■ Pausar';
+      rafId=requestAnimationFrame(step);
+    }
+    function pause(){
+      running=false;toggleBtn.textContent='▶ Continuar';
+      if(rafId)cancelAnimationFrame(rafId);
+    }
+    toggleBtn.addEventListener('click',function(){if(running)pause();else start();});
+    setActiveCard(-1);
+  });
+})();
+</script>
 <div class="resp-passos">
   <div class="rp-item"><span class="rp-cmd">Inspire</span> <span class="rp-arr">→</span> <span class="rp-num">1...2...3...4</span></div>
   <div class="rp-item"><span class="rp-cmd">Segure</span> <span class="rp-arr">→</span> <span class="rp-num">1...2...3...4</span></div>
